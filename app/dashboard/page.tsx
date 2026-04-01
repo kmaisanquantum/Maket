@@ -19,6 +19,8 @@ function RefreshIcon() {
 function PriceCard({ price }: { price: Price }) {
   const { t } = useI18n();
   const isCoffee = price.commodity === 'coffee';
+  const isCocoa = price.commodity === 'cocoa';
+  const isVanilla = price.commodity === 'vanilla';
   const change = price.week_change_pct;
 
   const changeClass = change == null ? 'change-flat'
@@ -29,10 +31,15 @@ function PriceCard({ price }: { price: Price }) {
   const changeLabel = change == null ? '—'
     : `${change > 0 ? '+' : ''}${change.toFixed(1)}%`;
 
+  let cardClass = 'price-card ';
+  if (isCoffee) cardClass += 'card-coffee price-card-coffee';
+  else if (isCocoa) cardClass += 'card-cocoa price-card-cocoa';
+  else if (isVanilla) cardClass += 'card-vanilla price-card-vanilla';
+
   return (
-    <div className={`price-card ${isCoffee ? 'card-coffee price-card-coffee' : 'card-cocoa price-card-cocoa'}`}>
+    <div className={cardClass}>
       <div className="price-commodity">
-        {isCoffee ? '☕ ' : '🍫 '}
+        {isCoffee ? '☕ ' : isCocoa ? '🍫 ' : '🍦 '}
         {t(`dashboard.${price.commodity}`)}
       </div>
       <div className="price-main">
@@ -49,10 +56,18 @@ function PriceCard({ price }: { price: Price }) {
         {change !== null && (
           <span className={`change-badge ${changeClass}`}>
             {change > 0 ? <ArrowUpIcon /> : change < 0 ? <ArrowDownIcon /> : null}
-            {' '}{changeLabel} {t('board.filter_all') !== 'All Loads' ? '' : 'this week'}
+            {' '}{changeLabel}
           </span>
         )}
       </div>
+      <style jsx>{`
+        .card-vanilla {
+          border-left: 4px solid #f59e0b;
+        }
+        .price-card-vanilla {
+          background: #fffbeb;
+        }
+      `}</style>
     </div>
   );
 }
@@ -90,8 +105,9 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [fetchPrices]);
 
-  const coffeePrice = prices.filter(p => p.commodity === 'coffee');
+  const coffeePrices = prices.filter(p => p.commodity === 'coffee');
   const cocoaPrices = prices.filter(p => p.commodity === 'cocoa');
+  const vanillaPrices = prices.filter(p => p.commodity === 'vanilla');
 
   return (
     <>
@@ -114,6 +130,10 @@ export default function DashboardPage() {
         </button>
       </div>
 
+      <div className="low-bandwidth-notice">
+        📡 Low Bandwidth Optimization Enabled
+      </div>
+
       {lastFetch && (
         <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginBottom: '1rem', fontFamily: 'IBM Plex Mono, monospace' }}>
           {t('dashboard.last_updated')}: {format(lastFetch, 'dd MMM yyyy HH:mm')}
@@ -122,10 +142,10 @@ export default function DashboardPage() {
       )}
 
       {loading ? (
-        <>
+        <div className="loading-container">
           <div className="spinner" />
           <p className="loading-text">{t('dashboard.loading')}</p>
-        </>
+        </div>
       ) : error ? (
         <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>
           <p style={{ color: 'var(--clay)' }}>{error}</p>
@@ -140,19 +160,19 @@ export default function DashboardPage() {
         </div>
       ) : (
         <>
-          {coffeePrice.length > 0 && (
+          {coffeePrices.length > 0 && (
             <section style={{ marginBottom: '1.5rem' }}>
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', color: 'var(--soil)', marginBottom: '0.75rem' }}>
                 ☕ {t('dashboard.coffee')}
               </h2>
               <div className="price-grid">
-                {coffeePrice.map(p => <PriceCard key={p.id} price={p} />)}
+                {coffeePrices.map(p => <PriceCard key={p.id} price={p} />)}
               </div>
             </section>
           )}
 
           {cocoaPrices.length > 0 && (
-            <section>
+            <section style={{ marginBottom: '1.5rem' }}>
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', color: '#7b2d8b', marginBottom: '0.75rem' }}>
                 🍫 {t('dashboard.cocoa')}
               </h2>
@@ -161,8 +181,40 @@ export default function DashboardPage() {
               </div>
             </section>
           )}
+
+          {vanillaPrices.length > 0 && (
+            <section>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', color: '#f59e0b', marginBottom: '0.75rem' }}>
+                🍦 {t('dashboard.vanilla')}
+              </h2>
+              <div className="price-grid">
+                {vanillaPrices.map(p => <PriceCard key={p.id} price={p} />)}
+              </div>
+            </section>
+          )}
         </>
       )}
+
+      <style jsx>{`
+        .loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 40px;
+        }
+        .low-bandwidth-notice {
+          font-size: 0.7rem;
+          background: #ecfdf5;
+          color: #065f46;
+          padding: 4px 10px;
+          border-radius: 4px;
+          display: inline-block;
+          margin-bottom: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      `}</style>
     </>
   );
 }

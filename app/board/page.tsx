@@ -1,32 +1,22 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { format, parseISO } from 'date-fns';
 import { useI18n } from '@/lib/i18n';
-import type { TransportRequest, Province } from '@/lib/supabase';
+import { TransportRequest, Province } from '@/lib/supabase';
+import { format, parseISO } from 'date-fns';
+import { PhoneIcon, PlusIcon, PackageIcon, TruckIcon, ShipIcon } from 'lucide-react';
 
 const PROVINCES: Province[] = [
-  'Eastern Highlands', 'Western Highlands', 'Morobe',
-  'East New Britain', 'West New Britain', 'Madang',
-  'Oro', 'Simbu', 'Southern Highlands', 'Enga', 'Other'
+  'Eastern Highlands', 'Western Highlands', 'Morobe', 'East New Britain',
+  'West New Britain', 'Madang', 'Oro', 'Simbu', 'Southern Highlands', 'Enga', 'Other'
 ];
-
-function PlusIcon() {
-  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-}
-function PhoneIcon() {
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.56 3.35a2 2 0 0 1 1.99-2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.87-.87a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>;
-}
-function PackageIcon() {
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>;
-}
 
 function TransportCard({ req }: { req: TransportRequest }) {
   const { t } = useI18n();
 
   const statusClass = `status-${req.status}`;
   const statusLabel = t(`board.status.${req.status}`);
-  const tagClass = req.commodity === 'coffee' ? 'tag-coffee' : 'tag-cocoa';
+  const tagClass = req.commodity === 'coffee' ? 'tag-coffee' : req.commodity === 'cocoa' ? 'tag-cocoa' : 'tag-vanilla';
 
   return (
     <div className="transport-card">
@@ -39,7 +29,7 @@ function TransportCard({ req }: { req: TransportRequest }) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
           <span className={`commodity-tag ${tagClass}`}>
-            {req.commodity === 'coffee' ? '☕' : '🍫'} {t(`dashboard.${req.commodity}`)}
+            {req.commodity === 'coffee' ? '☕' : req.commodity === 'cocoa' ? '🍫' : '🍦'} {t(`dashboard.${req.commodity}`)}
           </span>
           <span className={`status-chip ${statusClass}`}>{statusLabel}</span>
         </div>
@@ -55,7 +45,7 @@ function TransportCard({ req }: { req: TransportRequest }) {
           <div className="detail-value">{req.destination}</div>
         </div>
         <div className="detail-item">
-          <div className="detail-label"><PackageIcon /> {t('board.quantity')}</div>
+          <div className="detail-label"><PackageIcon size={16} /> {t('board.quantity')}</div>
           <div className="detail-value" style={{ fontFamily: 'IBM Plex Mono, monospace', fontWeight: 600 }}>
             {req.quantity_kg.toLocaleString()} kg
           </div>
@@ -82,14 +72,8 @@ function TransportCard({ req }: { req: TransportRequest }) {
 
       {req.status === 'open' && (
         <a href={`tel:${req.phone}`} className="contact-btn">
-          <PhoneIcon />
+          <PhoneIcon size={18} />
           {t('board.contact_farmer')}: {req.phone}
-        </a>
-      )}
-      {req.status === 'matched' && req.driver_phone && (
-        <a href={`tel:${req.driver_phone}`} className="contact-btn" style={{ background: 'var(--gold)', color: 'var(--bark)' }}>
-          <PhoneIcon />
-          {t('board.contact_driver')}: {req.driver_phone}
         </a>
       )}
     </div>
@@ -108,6 +92,11 @@ function PostLoadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess:
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {
+    if (!form.farmer_name || !form.phone || !form.province || !form.village || !form.quantity_kg || !form.pickup_date || !form.destination) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/transport', {
@@ -162,6 +151,7 @@ function PostLoadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess:
             <select className="form-select" value={form.commodity} onChange={e => set('commodity', e.target.value)}>
               <option value="coffee">☕ {t('dashboard.coffee')}</option>
               <option value="cocoa">🍫 {t('dashboard.cocoa')}</option>
+              <option value="vanilla">🍦 {t('dashboard.vanilla')}</option>
             </select>
           </div>
           <div className="form-group">
@@ -188,7 +178,7 @@ function PostLoadModal({ onClose, onSuccess }: { onClose: () => void; onSuccess:
 
         <div className="form-group">
           <label className="form-label">{t('board.notes')} (optional)</label>
-          <textarea className="form-textarea" value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Needs truck with cover, road accessible..." />
+          <textarea className="form-textarea" value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Empty PMV backhaul? Shipping space available? Road accessible?" />
         </div>
 
         <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
@@ -203,7 +193,7 @@ export default function BoardPage() {
   const { t } = useI18n();
   const [requests, setRequests] = useState<TransportRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'coffee' | 'cocoa'>('all');
+  const [filter, setFilter] = useState<'all' | 'coffee' | 'cocoa' | 'vanilla'>('all');
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
 
@@ -214,7 +204,7 @@ export default function BoardPage() {
       const { requests } = await res.json();
       setRequests(requests ?? []);
     } catch {
-      // serve from cache if offline
+      // offline fallback handled by PWA
     } finally {
       setLoading(false);
     }
@@ -234,23 +224,28 @@ export default function BoardPage() {
         <p className="section-sub">{t('board.subtitle')}</p>
       </div>
 
-      <div className="filter-row">
-        {(['all', 'coffee', 'cocoa'] as const).map(f => (
+      <div className="filter-row" style={{ overflowX: 'auto', paddingBottom: '8px' }}>
+        {(['all', 'coffee', 'cocoa', 'vanilla'] as const).map(f => (
           <button
             key={f}
             className={`filter-chip ${filter === f ? 'active' : ''}`}
             onClick={() => setFilter(f)}
           >
-            {f === 'all' ? t('board.filter_all') : f === 'coffee' ? `☕ ${t('board.filter_coffee')}` : `🍫 ${t('board.filter_cocoa')}`}
+            {f === 'all' ? t('board.filter_all') : f === 'coffee' ? `☕ ${t('board.filter_coffee')}` : f === 'cocoa' ? `🍫 ${t('board.filter_cocoa')}` : `🍦 ${t('board.filter_vanilla')}`}
           </button>
         ))}
       </div>
 
+      <div className="uber-freight-banner">
+        <TruckIcon size={20} /> <ShipIcon size={20} />
+        <span style={{ marginLeft: '8px' }}>Uber for Freight: PMVs and Containers</span>
+      </div>
+
       {loading ? (
-        <>
+        <div className="loading-container">
           <div className="spinner" />
           <p className="loading-text">{t('board.loading')}</p>
-        </>
+        </div>
       ) : requests.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">🚛</div>
@@ -261,7 +256,7 @@ export default function BoardPage() {
       )}
 
       <button className="fab" onClick={() => setShowModal(true)}>
-        <PlusIcon />
+        <PlusIcon size={24} />
         {t('board.post_load')}
       </button>
 
@@ -276,6 +271,31 @@ export default function BoardPage() {
       )}
 
       {toast && <div className="toast">✅ {toast}</div>}
+
+      <style jsx>{`
+        .loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 40px;
+        }
+        .uber-freight-banner {
+          background: var(--gold-pale);
+          border: 1px solid var(--gold);
+          color: var(--bark);
+          padding: 12px;
+          border-radius: 12px;
+          margin-bottom: 20px;
+          display: flex;
+          align-items: center;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+        .tag-vanilla {
+          background: #fef3c7;
+          color: #92400e;
+        }
+      `}</style>
     </>
   );
 }

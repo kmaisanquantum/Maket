@@ -13,9 +13,10 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Dashboard
   'dashboard.title': { en: 'Live Market Prices', tpi: 'Prais Bilong Tude' },
-  'dashboard.subtitle': { en: 'PNG Coffee & Cocoa — updated weekly', tpi: 'Kofi na Kokoa PNG — Apdetim Olgeta Wik' },
+  'dashboard.subtitle': { en: 'PNG Coffee, Cocoa & Vanilla — updated weekly', tpi: 'Kofi, Kokoa na Vanilla PNG — Apdetim Olgeta Wik' },
   'dashboard.coffee': { en: 'Coffee', tpi: 'Kofi' },
   'dashboard.cocoa': { en: 'Cocoa', tpi: 'Kokoa' },
+  'dashboard.vanilla': { en: 'Vanilla', tpi: 'Vanilla' },
   'dashboard.per_kg': { en: 'per kg', tpi: 'long wan kilo' },
   'dashboard.region': { en: 'Region', tpi: 'Ples' },
   'dashboard.source': { en: 'Source', tpi: 'Sosum' },
@@ -27,17 +28,17 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Transport Board
   'board.title': { en: 'Transport Board', tpi: 'Bodi Bilong PMV' },
-  'board.subtitle': { en: 'Connect farmers with PMV drivers', tpi: 'Kamap wantaim diraiva bilong PMV' },
+  'board.subtitle': { en: 'Connect farmers with PMV drivers & shipping space', tpi: 'Kamap wantaim diraiva bilong PMV na sip' },
   'board.post_load': { en: 'Post a Load', tpi: 'Posim Lod' },
   'board.available_loads': { en: 'Available Loads', tpi: 'Lod Istap' },
   'board.farmer': { en: 'Farmer', tpi: 'Pama' },
-  'board.driver': { en: 'Driver', tpi: 'Diraiva' },
+  'board.driver': { en: 'Driver / PMV', tpi: 'Diraiva / PMV' },
   'board.pickup': { en: 'Pickup Location', tpi: 'Ples Pikap' },
-  'board.destination': { en: 'Destination', tpi: 'Ples Bikpela' },
+  'board.destination': { en: 'Destination (Moresby/Lae)', tpi: 'Ples Bikpela (Moresby/Lae)' },
   'board.quantity': { en: 'Quantity (kg)', tpi: 'Hamas Kilo' },
   'board.date': { en: 'Pickup Date', tpi: 'De Bilong Pikap' },
   'board.price_offered': { en: 'Price Offered (PGK)', tpi: 'Prais Yu Ofim (Kina)' },
-  'board.notes': { en: 'Notes', tpi: 'Tok Moa' },
+  'board.notes': { en: 'Notes (e.g. Empty PMV backhaul)', tpi: 'Tok Moa (olsem PMV i go bek emti)' },
   'board.phone': { en: 'Phone Number', tpi: 'Namba Fon' },
   'board.province': { en: 'Province', tpi: 'Provins' },
   'board.village': { en: 'Village', tpi: 'Ples' },
@@ -55,8 +56,9 @@ const translations: Record<string, Record<Language, string>> = {
   'board.success': { en: 'Load posted successfully!', tpi: 'Posim lod pinis!' },
   'board.error': { en: 'Failed to post. Try again.', tpi: 'Bagarap. Traim Gen.' },
   'board.filter_all': { en: 'All Loads', tpi: 'Olgeta Lod' },
-  'board.filter_coffee': { en: 'Coffee Only', tpi: 'Kofi Tasol' },
-  'board.filter_cocoa': { en: 'Cocoa Only', tpi: 'Kokoa Tasol' },
+  'board.filter_coffee': { en: 'Coffee', tpi: 'Kofi' },
+  'board.filter_cocoa': { en: 'Cocoa', tpi: 'Kokoa' },
+  'board.filter_vanilla': { en: 'Vanilla', tpi: 'Vanilla' },
 
   // Common
   'common.kina': { en: 'PGK', tpi: 'Kina' },
