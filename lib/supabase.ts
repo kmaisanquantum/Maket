@@ -23,7 +23,7 @@ export function createServerClient() {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type Commodity = 'coffee' | 'cocoa';
+export type Commodity = 'coffee' | 'cocoa' | 'vanilla';
 export type TransportStatus = 'open' | 'matched' | 'completed';
 export type Province =
   | 'Eastern Highlands'
