@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: maket-dspng
+    runtime: node
+    region: singapore # Closest to Papua New Guinea
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false  # Set in Render dashboard
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false  # Set in Render dashboard
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false  # Set in Render dashboard — keep secret
+      - key: PORT
+        value: 3000
+    autoDeploy: true
+    domains:
+      - maket.dspng.tech

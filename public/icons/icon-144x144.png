@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="144" viewBox="0 0 144 144">
+  <rect width="144" height="144" rx="26" fill="#1a3d2b"/>
+  <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle"
+        font-family="serif" font-size="50" fill="#e9a822">M</text>
+  <text x="50%" y="78%" dominant-baseline="middle" text-anchor="middle"
+        font-family="sans-serif" font-size="14" fill="#52b788" letter-spacing="2">PNG</text>
+</svg>
